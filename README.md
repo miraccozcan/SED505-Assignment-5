@@ -38,7 +38,7 @@ A Unified Modeling Language (UML) diagram visually represents the integration of
   - **Dashed lines** for dependencies (e.g., one module relies on another module’s output).
   - **Aggregation** to represent parts of a whole (e.g., `ControlModule` aggregates `PerceptionModule` and `PlanningModule`).
 ## UML Diagram
-![UML Diagram](
+![UML Diagram](https://github.com/miraccozcan/SED505-Assignment-5/blob/main/UML%20CAMERA.png)
 
 ---
 
