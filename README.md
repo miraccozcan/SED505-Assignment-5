@@ -250,14 +250,91 @@ int main() {
 ## 6. Questions and Answers
 
 ### Q1: Compare Standard and ML Design Patterns
-- **Similarity**: Both ensure modularity and reusability.
-- **Difference**: ML design patterns focus on managing data and training models, while standard patterns are more general-purpose for software design.
+- **Similarity**: 
+  - Both ensure modularity, reusability, and scalability, enabling systems to be extended or modified with minimal impact on other components.
+- Both encourage separation of concerns, ensuring that each component handles a specific responsibility, which simplifies debugging and collaboration in development teams.
+Example: In the autonomous driving system, both standard and ML design patterns focus on breaking down tasks into modules like PerceptionModule, PlanningModule, and ControlModule.
+
+- **Difference**: 
+- Focus:
+Standard design patterns (e.g., Singleton, Observer, Factory) are general-purpose and focus on structuring code, managing object creation, and ensuring efficient communication between components.
+ML design patterns emphasize managing data pipelines, handling training workflows, and optimizing model performance.
+- Data-Centric vs. Process-Centric:
+ML design patterns are data-centric—they revolve around handling large datasets, pre-processing, and training models.
+Standard design patterns are process-centric—they deal with program structure and execution flow.
+- Example:
+Standard: A Factory Pattern might be used to instantiate different sensors (Camera, LIDAR).
+ML: The Data Augmentation Pattern is used to generate more training data for object detection.
 
 ### Q2: Are ML Design Patterns Useful?
-Yes, they simplify implementation and scalability, especially for data-intensive applications.
+Yes, ML design patterns are highly useful for the following reasons:
+- Simplify Complex ML Workflows:
+They provide structured methods to handle common ML challenges, such as data preparation, model evaluation, and deployment.
+Example: Using the Transfer Learning Pattern allows a model trained on one task (e.g., object detection) to be adapted to a related task (e.g., pedestrian detection).
+- Enhance Scalability:
+ML design patterns enable smooth scaling from small datasets to large distributed systems, making them ideal for production-grade machine learning.
+Example: The Pipeline Pattern automates data preprocessing, model training, and evaluation steps.
+- Promote Reusability:
+By abstracting ML tasks into reusable components, ML patterns reduce the need to rewrite workflows for every project.
+- Improve Collaboration:
+Patterns like the Feature Store Pattern standardize the way features are shared and reused across teams in large ML projects.
+
 
 ### Q3: Which Standard Pattern Could Be Used?
-The **Observer Pattern** is suitable for real-time updates from sensors.
+**Observer Pattern:**
+The Observer Pattern is highly suitable for real-time systems like autonomous driving, where sensors constantly update the system with new data.
+**How It Works:**
+The PerceptionModule acts as the "subject," broadcasting updates to the PlanningModule and ControlModule.
+Changes in one module (e.g., detecting an obstacle) immediately notify dependent modules, triggering necessary updates.
+Example:
+If a CameraData object detects a pedestrian, the PerceptionModule notifies the PlanningModule to adjust the route and the ControlModule to slow down.
+
+**Strategy Pattern:**
+The Strategy Pattern can be used to dynamically switch behaviors based on environmental conditions.
+**How It Works:**
+The ControlModule chooses different driving strategies (e.g., highway mode vs. urban mode) based on GPS location and sensor inputs.
+Example:
+On highways, the system uses a "high-speed" strategy, while in cities, it switches to a "cautious" strategy.
 
 ### Q4: Which Other ML Pattern Fits?
-The **Pipeline Pattern** is ideal for sequential processing of sensor data.
+**1. Pipeline Pattern**
+The Pipeline Pattern is ideal for sequential data processing tasks in machine learning.
+**How It Works:**
+Sensor data flows through a pipeline for preprocessing (noise filtering), feature extraction, and decision-making.
+**Example:**
+In the autonomous driving system:
+Camera data is preprocessed to identify objects.
+LIDAR data is used to detect obstacles.
+GPS data is used for localization.
+These are combined sequentially to update the vehicle's route and actions.
+
+**2. Data Augmentation Pattern**
+This pattern is useful for enhancing the training dataset by generating synthetic variations.
+**How It Works:**
+Applies transformations like rotation, scaling, or flipping to existing image datasets.
+**Example:**
+Training an object detection model for the CameraData may involve augmenting pedestrian images with different lighting conditions or angles to improve robustness.
+
+
+**3. Ensemble Learning Pattern**
+Combines multiple models to improve prediction accuracy.
+**How It Works:**
+Uses a collection of models (e.g., a combination of LIDAR and Camera models) to make decisions.
+**Example:**
+In the autonomous system, an ensemble of object detection models can combine LIDAR and Camera data to reduce false positives.
+
+
+**4. Transfer Learning Pattern**
+This pattern leverages a pre-trained model and fine-tunes it for a specific task.
+**How It Works:**
+Use a model trained on a large dataset (e.g., ImageNet) and adapt it for detecting traffic signs in CameraData.
+**Example:**
+A pre-trained object detection model could be fine-tuned to specifically identify vehicles, pedestrians, and bicycles.
+
+
+**5. Feature Store Pattern**
+Centralizes feature engineering for reusability across teams or projects.
+**How It Works:**
+Features extracted from CameraData, LidarData, and GPSData are stored in a centralized repository for use by multiple modules.
+**Example:**
+Precomputed GPS waypoints could be reused across different routes in the system.
