@@ -97,8 +97,7 @@ Develop an autonomous driving system that integrates data from:
 
 ### Code in C++
 
-```
-#include <iostream>
+```#include <iostream>
 #include <cmath>
 
 // Constants
@@ -167,12 +166,24 @@ public:
                   << ", " << gpsData.dest_longitude << ").\n";
     }
 
-    void updateRoute(const CameraData &cameraData, const LidarData &lidarData) {
-        if (cameraData.object != CameraData::ObjectType::NONE) {
-            std::cout << "Adjusting route for detected object.\n";
+    void updateRoute(const CameraData &cameraData, const LidarData &lidarData, double &speed, double &direction) {
+        if (cameraData.object == CameraData::ObjectType::PEDESTRIAN) {
+            std::cout << "Slowing down for pedestrian.\n";
+            speed = std::max(speed - 20.0, 10.0); // Reduce speed
+        } else if (cameraData.object == CameraData::ObjectType::STOPLIGHT) {
+            std::cout << "Stopping for traffic light.\n";
+            speed = 0.0; // Stop the vehicle
+        } else if (cameraData.object == CameraData::ObjectType::SPEEDLIMIT) {
+            std::cout << "Adjusting speed to speed limit.\n";
+            speed = 50.0; // Assume speed limit is 50 km/h
         }
-        if (lidarData.object != LidarData::ObjectType::ROAD_CURVATURE) {
-            std::cout << "Adjusting route for road conditions.\n";
+
+        if (lidarData.object == LidarData::ObjectType::LARGE_OBSTRUCTION) {
+            std::cout << "Re-routing to avoid large obstruction.\n";
+            direction += 15.0; // Adjust direction to avoid obstruction
+        } else if (lidarData.object == LidarData::ObjectType::ROAD_CURVATURE) {
+            std::cout << "Adjusting direction for road curvature.\n";
+            direction -= 5.0; // Slightly adjust direction to follow curvature
         }
     }
 };
@@ -190,13 +201,13 @@ public:
         gpsData.dest_longitude = destLon;
     }
 
-    void control(double speed, double direction, GPSData &gpsData, CameraData &cameraData, LidarData &lidarData) {
+    void control(double &speed, double &direction, GPSData &gpsData, CameraData &cameraData, LidarData &lidarData) {
         perceptionModule.processGPSData(gpsData, speed, direction);
         perceptionModule.processCameraData(cameraData);
         perceptionModule.processLidarData(lidarData);
 
         planningModule.planRoute(gpsData);
-        planningModule.updateRoute(cameraData, lidarData);
+        planningModule.updateRoute(cameraData, lidarData, speed, direction);
     }
 };
 
@@ -218,7 +229,10 @@ public:
         for (int hour = 0; hour < 24; hour++) {
             std::cout << "Hour " << hour + 1 << ":\n";
             controlModule.control(speed, direction, gpsData, cameraData, lidarData);
-            if (sqrt(pow(gpsData.curr_latitude - gpsData.dest_latitude, 2) + pow(gpsData.curr_longitude - gpsData.dest_longitude, 2)) < 25) {
+            double distanceToDestination = sqrt(pow(gpsData.curr_latitude - gpsData.dest_latitude, 2) + 
+                                                pow(gpsData.curr_longitude - gpsData.dest_longitude, 2));
+            std::cout << "Current Speed: " << speed << " km/h, Direction: " << direction << " degrees.\n";
+            if (distanceToDestination < 25) {
                 std::cout << "You have arrived! (close enough).\n";
                 break;
             }
@@ -245,7 +259,7 @@ int main() {
 
     return 0;
 }
-```
+
 
 ## 6. Questions and Answers
 
